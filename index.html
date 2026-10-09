@@ -486,6 +486,29 @@ header.top,.progress{flex:none}
 .dg.tight .slot{overflow:hidden}
 .dg.tight .slot .nm{font-size:.62em;line-height:1.1}
 .dg.tight .slot .val{line-height:1.1}
+.tools .tnote{margin:6px 0 0;color:var(--muted)}
+.dg.cmp.nototal{display:block}
+/* full-screen calculator */
+.calcscrim{align-items:stretch}
+.calcsheet{width:100%;max-width:none;height:100%;max-height:none}
+.calcbody{flex:1 1 0;min-height:0;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.3fr);gap:var(--gap)}
+.calcleft{min-height:0;display:flex;flex-direction:column}
+.calcleft>.sbx{flex:1 1 0;min-height:0;overflow:auto;display:flex;flex-direction:column;gap:10px}
+.cprob{background:var(--bg);border:3px solid var(--line);border-radius:14px;padding:12px 16px;line-height:1.45}
+.cprob p{margin:0}
+.cnums .chip{min-height:calc(var(--tap)*.9);font-size:1.15em}
+.calcright{min-height:0;display:flex;flex-direction:column;gap:10px}
+.calcright .display{flex:none;min-height:calc(var(--tap)*1.1);flex-direction:column;align-items:flex-end;justify-content:center;gap:2px}
+.calcright .display .dval{font-size:1.8em}
+.calcright .ckeys{flex:1 1 0;min-height:0;grid-template-rows:repeat(5,minmax(0,1fr));gap:10px}
+.calcright .ckeys .key{min-height:0;height:100%;font-size:2em}
+.calcright .ckeys .key.fn{font-size:1.3em}
+.calcleft .calcstep{width:100%;font-size:1em;min-height:var(--tap)}
+@media (max-aspect-ratio:1/1){
+  .calcbody{grid-template-columns:1fr;grid-template-rows:minmax(0,.8fr) minmax(0,1.6fr)}
+}
+.calcright .ckeys .key.opk{font-size:2.6em;line-height:1}
+.calcright .ckeys .eqk{font-size:2.6em}
 [hidden]{display:none!important}
 </style>
 </head><body>
@@ -1750,6 +1773,9 @@ const SCALE={
 "M2-L5-PS-1":"3420,2370","M2-L5-PS-2":"1846,1378|2634,590","M2-L5-PS-3":"6775,1118|2125,3999,1769","M2-L5-PS-4":"10060,12240,14128","M2-L5-PS-5":"23825,2050,34125",
 "M2-L5-PS-6":"520,343,185","M2-L5-ET-1":"280,280,245,85","M2-L5-ET-2":"187,129,155",
 "M3-L4-AP-1":"12,120","M3-L12-PS-3":"347,1388,589","M3-L12-ET-1":"256,768,872","M3-L13-PS-2":"24,36,180","M3-L13-PS-4":"814,3256,3113","M3-L14-AP-1":"23,69,276"};
+/* comparison diagrams show the total bracket only when the story asks for or gives a total */
+const NEEDS_TOTAL=new Set(["M1-L12-PS-1","M1-L12-PS-2","M1-L12-PS-3","M1-L12-ET-1","M1-L16-PS-2","M1-L16-PS-4","M1-L17-PS-3","M1-L17-ET-1","M1-L18-AP-1","M1-L18-PS-1","M1-L18-ET-1","M2-L5-PS-1","M2-L5-PS-4","M3-L13-PS-2","M3-L13-PS-4","M3-L14-AP-1"]);
+const showTot=(w,pt)=>!(pt&&pt.noTotal&&w.model===pt.m);
 const MINSEG=.11;
 function scalePos(vals){const pts=[...new Set([0,...vals])].sort((p,q)=>p-q);const mx=pts[pts.length-1]||1;
   const g=pts.slice(1).map((p,i)=>Math.max((p-pts[i])/mx,MINSEG));const tot=g.reduce((s,x)=>s+x,0);const pos={0:0};let c=0;
@@ -1769,7 +1795,7 @@ const LIBMAP={};
 MODULES.forEach(M=>M.lessons.forEach(L=>L.sections.forEach(S=>S.problems.forEach(p=>{
   const id="M"+M.n+"-L"+L.n+"-"+S.key+"-"+p.n;
   LIBMAP[id]=Object.assign({id,mod:M.n,lesson:L.n,sec:S.name,title:"Module "+M.n+" Lesson "+L.n+" "+S.name+" · Problem "+p.n},p);
-  if(MODEL_TAGS[id])p.parts.forEach(pt=>{if(pt.type==="word"){const [m,k]=MODEL_TAGS[id].split(":");pt.m=m;if(SCALE[id]){const g=scaleGeo(m,SCALE[id]);if(g.geo)pt.geo=g.geo;if(g.pw)pt.pw=g.pw}else if(MODEL_GEO[id])pt.geo=MODEL_GEO[id];else if(k)pt.geo=geoFor(m,+k)}});
+  if(MODEL_TAGS[id])p.parts.forEach(pt=>{if(pt.type==="word"){const [m,k]=MODEL_TAGS[id].split(":");pt.m=m;if(/^(cmp|cmp3|eq2x2|eq2x3)$/.test(m)&&!NEEDS_TOTAL.has(id))pt.noTotal=true;if(SCALE[id]){const g=scaleGeo(m,SCALE[id]);if(g.geo)pt.geo=g.geo;if(g.pw)pt.pw=g.pw}else if(MODEL_GEO[id])pt.geo=MODEL_GEO[id];else if(k)pt.geo=geoFor(m,+k)}});
 }))));
 const pidOf=(m,l,k,n)=>"M"+m+"-L"+l+"-"+k+"-"+n;
 const tagOf=P=>"M"+P.mod+" · Lesson "+P.lesson+" "+P.sec;
@@ -1786,14 +1812,18 @@ const DEFAULTS={size:"large",text:"m",spacing:"normal",theme:"standard",tint:"no
   read:true,autoRead:false,highlight:true,rate:"normal",speakKeys:false,
   models:["ppw2","ppw3","ppw4","cmp"],words:true,frames:true,chips:false,showWork:true,checks:false,focus:false,calc:false,refs:false,breakEvery:0,
   stt:true,spacing2:false,scan:"off",scanSpeed:2,scanAudio:false,scanTap:true};
-let settings=Object.assign({},DEFAULTS);try{localStorage.removeItem("sdw2.settings")}catch(e){}
+/* tool choices are remembered in this browser only (no names, no student work) */
+const PREFS_KEY="sdw2.prefs";const savedPrefs=LS.get(PREFS_KEY,null);
+let settings=Object.assign({},DEFAULTS,savedPrefs&&typeof savedPrefs==="object"?savedPrefs:{});try{localStorage.removeItem("sdw2.settings")}catch(e){}
+let lastPrefs=JSON.stringify(settings);
+function savePrefs(){const s=JSON.stringify(settings);if(s!==lastPrefs){lastPrefs=s;LS.set(PREFS_KEY,settings)}}
 const SS={get(k,d){try{const v=sessionStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{sessionStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
 try{localStorage.removeItem("sdw2.work")}catch(e){}
 let work=SS.get("sdw2.work",{});
 const migrateId=id=>/^L\d/.test(id)?"M2-"+id:id;
 assign.items.forEach(i=>{if(i.ref)i.ref=migrateId(i.ref)});
 {const nw={};Object.keys(work).forEach(k=>nw[migrateId(k)]=work[k]);work=nw;}
-const save=()=>{LS.set("sdw2.assign",assign);SS.set("sdw2.work",work)};
+const save=()=>{LS.set("sdw2.assign",assign);SS.set("sdw2.work",work);savePrefs()};
 
 const S={view:"home",pid:null,scr:0,ed:null,msg:null,err:null,copyText:null,tMod:2,tLesson:5,doneCount:0,lastRead:"",calc:{disp:"0",acc:null,op:null,fresh:true,note:""},fi:{},tSel:{},pdf:null,tEdit:null};
 const app=document.getElementById("app");
@@ -1898,7 +1928,7 @@ function btnLabel(b){let t=(b.getAttribute("aria-label")||b.textContent||"").rep
 /* read aloud with word highlighting */
 const RATE={slow:.7,normal:.9,fast:1.15};
 function clearHl(){document.querySelectorAll(".rd").forEach(el=>el.classList.remove("rd"))}
-const READ_ACTS=["read","readref","readans"];
+const READ_ACTS=["read","readref","readans","calcread"];
 function readBtns(){document.querySelectorAll(READ_ACTS.map(x=>`[data-act=${x}]`).join(",")).forEach(b=>{if(!b.dataset.lab)b.dataset.lab=b.textContent;b.textContent=S.speaking?"Stop reading":b.dataset.lab;b.classList.toggle("stopread",!!S.speaking);b.setAttribute("aria-pressed",S.speaking?"true":"false")})}
 function stopReading(){try{window.speechSynthesis&&window.speechSynthesis.cancel()}catch(e){}S.speaking=false;clearHl();readBtns()}
 function speak(text,spans,track){try{const s=window.speechSynthesis;if(!s||!text)return;s.cancel();clearHl();S.speaking=!!track;readBtns();
@@ -1931,15 +1961,29 @@ function calcPress(k){const c=S.calc;c.note="";
   if(c.op&&!c.fresh)c.acc=calcApply(c.acc,cur,c.op);else if(c.op==null||c.acc==null)c.acc=cur;
   c.op=k;c.disp=String(Math.round(c.acc*10000)/10000);c.fresh=true;
 }
-function renderCalc(){const c=S.calc;
+/* full-screen calculator: big keys, with the problem and its numbers on the left so nothing has to be remembered */
+function calcNums(P,pi){const out=[];const add=v=>{const n=String(v).replace(/,/g,"");if(/^\d+(\.\d+)?$/.test(n)&&!out.some(o=>o.replace(/,/g,"")===n))out.push(String(v))};
+  (allText(P).match(/\d{1,3}(?:,\d{3})+(?:\.\d+)?|\d+(?:\.\d+)?/g)||[]).forEach(add);
+  try{chipsFor(P,pi).chips.forEach(add)}catch(e){}return out.slice(0,24)}
+function calcProbText(P,sc){const q=sc&&!sc.done?(P.parts[sc.pi].q||""):"";return[P.text||"",q].filter(Boolean).join(" ")}
+function renderCalc(){const c=S.calc;const P=prob(S.pid);const sc=P?curSc():null;
   const keys=["7","8","9","÷","4","5","6","×","1","2","3","−","C","0","⌫","+"];
-  return`<aside class="calcp" aria-label="Calculator"><div class="calc">
-   <div class="calchead"><p class="sheet-title">Calculator</p><button class="btn" data-act="opencalc">Close</button></div>
-   <div class="display"><span class="dname">${c.op?esc(calcShow(c.acc)+" "+c.op):""}</span><span class="dval">${esc(calcShow(parseFloat(c.disp)))}</span>${c.note?`<span class="dname">(${esc(c.note)})</span>`:""}</div>
-   <div class="ckeys">${keys.map(k=>`<button class="key ${/\d/.test(k)?"":"fn"}" data-act="calc" data-v="${k}" aria-label="${esc(SYM[k]||(k==="C"?"clear":k==="⌫"?"back up":k))}">${k==="C"?"Clear":k==="⌫"?"Back up":k}</button>`).join("")}<button class="key eqk" data-act="calc" data-v="=" aria-label="equals">=</button></div>
-   ${S.calcLast&&stepsVisible()?`<button class="btn primary calcstep" data-act="calcstep">Put ${esc(calcLine(S.calcLast))} in my steps</button>`:""}
-   ${(S.calcHist||[]).length?`<div class="chist"><p class="lab">Recent</p>${S.calcHist.map(h=>`<p class="num">${esc(calcLine(h))}</p>`).join("")}<p class="small">These answers also show up as buttons when you fill in a box.</p></div>`:""}
-  </div></aside>`;
+  const nums=P&&sc&&!sc.done?calcNums(P,sc.pi):[];
+  return`<div class="scrim calcscrim"><div class="sheet calcsheet" role="dialog" aria-label="Calculator">
+   <div class="sheet-head"><p class="sheet-title">Calculator</p>${settings.read&&P?`<button class="btn" data-act="calcread">Read aloud</button>`:""}<button class="btn primary" data-act="opencalc">Close calculator</button></div>
+   <div class="calcbody">
+    <div class="sbw calcleft"><div class="sbx">
+     ${P?`<p class="lab">The problem</p><div class="cprob"><p>${esc(calcProbText(P,sc))}</p>${infoTables(P)}</div>`:""}
+     ${nums.length?`<p class="lab">Numbers from the problem</p><div class="chips cnums">${nums.map(v=>`<button class="chip n" data-act="calcnum" data-v="${esc(v)}">${esc(v)}</button>`).join("")}</div>`:""}
+     ${S.calcLast&&stepsVisible()?`<div class="rowbtns"><button class="btn primary calcstep" data-act="calcstep">Put ${esc(calcLine(S.calcLast))} in my steps</button></div>`:""}
+     ${S.calcMsg?`<p class="hint" role="status">${esc(S.calcMsg)}</p>`:""}
+     ${(S.calcHist||[]).length?`<div class="chist"><p class="lab">Recent</p>${S.calcHist.map(h=>`<p class="num">${esc(calcLine(h))}</p>`).join("")}<p class="small">These answers also show up as buttons when you fill in a box.</p></div>`:""}
+    </div></div>
+    <div class="calcright">
+     <div class="display"><span class="dname">${c.op?esc(calcShow(c.acc)+" "+c.op):""}</span><span class="dval">${esc(calcShow(parseFloat(c.disp)))}</span>${c.note?`<span class="dname">(${esc(c.note)})</span>`:""}</div>
+     <div class="ckeys">${keys.map(k=>`<button class="key ${/^[÷×−+]$/.test(k)?"opk":/\d/.test(k)?"":"fn"}" data-act="calc" data-v="${k}" aria-label="${esc(SYM[k]||(k==="C"?"clear":k==="⌫"?"back up":k))}">${k==="C"?"Clear":k==="⌫"?"Back up":k}</button>`).join("")}<button class="key eqk" data-act="calc" data-v="=" aria-label="equals">=</button></div>
+    </div>
+   </div></div></div>`;
 }
 function calcLine(h){return`${calcShow(h.a)} ${h.op} ${calcShow(h.b)} = ${calcShow(h.res)}`+(h.note?` (${h.note})`:"")}
 function stepsVisible(){if(S.view!=="problem"||!settings.showWork)return false;const P=prob(S.pid);if(!P)return false;const sc=curSc();if(!sc||sc.done)return false;const pt=P.parts[sc.pi];
@@ -2052,12 +2096,13 @@ function bindSettings(){document.querySelectorAll("[data-set]").forEach(el=>el.a
   if(k==="breakEvery")settings[k]=+el.value;
   save();applySettings()}))}
 
-/* student tools panel: chosen fresh each time the app opens, never saved */
+/* student tools panel: choices are remembered on this browser until reset */
 function optRow(k,label,opts){return`<div class="optrow"><span class="olab">${label}</span>${opts.map(([v,t])=>{const on=String(settings[k])===String(v);return`<button class="segbtn ${on?"on":""}" data-act="setopt" data-k="${k}" data-v="${v}" aria-pressed="${on}">${t}</button>`}).join("")}</div>`}
 function tile(k,label,desc){const on=!!settings[k];return`<button class="tile ${on?"on":""}" data-act="tgl" data-k="${k}" aria-pressed="${on}"><span class="tn">${label}</span><span class="td">${desc}</span><span class="ts">${on?"On":"Off"}</span></button>`}
 function renderTools(first){
   return`<div class="scrim"><div class="sheet tools" role="dialog" aria-label="Choose your tools">
-   <div class="sheet-head"><p class="sheet-title">${first?"Choose your tools for today":"Your tools"}</p><button class="btn primary" data-act="closetools">${first?"Start":"Done"}</button></div>
+   <div class="sheet-head"><p class="sheet-title">${first?"Choose your tools":"Your tools"}</p><button class="btn" data-act="resettools">Start over</button><button class="btn primary" data-act="closetools">${first?"Start":"Done"}</button></div>
+   <p class="small tnote">This device remembers these choices. Start over sets every tool back to the beginning.</p>
    <div class="sbw grow"><div class="sbx">
    <section class="tsec"><h3>See</h3>
     ${optRow("size","Buttons",[["standard","Standard"],["large","Large"],["xl","Extra large"]])}
@@ -2085,9 +2130,10 @@ function renderTools(first){
 
 /* ---------- render ---------- */
 function render(){
-  applySettings();
+  applySettings();savePrefs();
   let h=S.view==="home"?renderHome():S.view==="problem"?renderProblem():S.view==="all"?renderAll():S.view==="break"?renderBreak():renderTeacher();
   if(S.ed)h+=renderSheet();
+  else if(S.view==="problem"&&settings.calc&&S.calcOpen)h+=renderCalc();
   const oldSheet=document.querySelector(".scrim .sbx");const keepScroll=oldSheet&&S.ed&&S.ed.mode==="tools"?oldSheet.scrollTop:null;
   app.innerHTML=h;
   document.documentElement.classList.toggle("tview",S.view==="teacher");
@@ -2163,7 +2209,7 @@ function renderProblem(){
   ${sc.done?"":`<div class="sbw probw"><section class="prob sbx">${P.text?`<div class="ptop"><p>${esc(P.text)}</p></div>`:""}${q?`<div class="ptop"><p class="${P.text?"pq":""}">${esc(q)}</p></div>`:""}${infoTables(P)}${P.parts[sc.pi]&&P.parts[sc.pi].note?`<p class="hint">Note: ${esc(P.parts[sc.pi].note)}</p>`:""}</section></div>`}
   <ol class="progress">${prog}</ol>
   <div class="sbw grow"><main class="stage sbx">${!sc.done&&P.img&&IMG[P.img]?(P.parts[sc.pi].prot?protHTML(IMG[P.img]):`<div class="figwrap"><img class="figure" src="${IMG[P.img]}" alt="Picture from the worksheet for this problem"></div>`):""}${body}</main></div>
-  </div>${settings.calc&&S.calcOpen?renderCalc():""}</div>
+  </div></div>
   <nav class="navbar"><button class="btn" data-act="prev" ${S.scr===0?"disabled":""}>Back</button><button class="btn primary" data-act="next">${sc.done?"Next problem":"Next"}</button></nav>`;
 }
 
@@ -2185,14 +2231,14 @@ function modelRows(w,pt){return pt&&pt.geo&&w.model===pt.m?pt.geo:MODELS[w.model
 function diagram(w,live,pt){
   if(!w.model)return"";
   const RM=modelRows(w,pt);
-  if(RM)return`<div class="dg cmp"><div class="cmp-rows">${RM.map(r=>`<div class="crow${r[0][0]===""?" arow":""}">${r.map(([k,f,c,dv],j)=>k===""?`<span class="gap" style="flex:0 0 ${f*100}%"></span>`:slot(w,k,(c<0?"diff":"seg seg"+(c+1))+(j&&r[j-1][0]!==""?" joined":""),live).replace('class="slot','style="flex:0 0 '+(f*100)+'%'+(dv>1?';background-image:repeating-linear-gradient(90deg,transparent 0 calc(100% / '+dv+' - 3px),var(--ink) calc(100% / '+dv+' - 3px) calc(100% / '+dv+'))':'')+'" class="slot')).join("")}</div>`).join("")}</div><div class="vbrace"></div>${slot(w,"total","whole",live)}</div>`;
-  if(w.model==="cmp")return`<div class="dg cmp"><div class="cmp-rows"><div class="crow">${slot(w,"a","seg seg1 full",live)}</div><div class="crow">${slot(w,"b","seg seg2 short",live)}${slot(w,"diff","diff",live)}</div></div><div class="vbrace"></div>${slot(w,"total","whole",live)}</div>`;
+  if(RM)return`<div class="dg cmp${showTot(w,pt)?"":" nototal"}"><div class="cmp-rows">${RM.map(r=>`<div class="crow${r[0][0]===""?" arow":""}">${r.map(([k,f,c,dv],j)=>k===""?`<span class="gap" style="flex:0 0 ${f*100}%"></span>`:slot(w,k,(c<0?"diff":"seg seg"+(c+1))+(j&&r[j-1][0]!==""?" joined":""),live).replace('class="slot','style="flex:0 0 '+(f*100)+'%'+(dv>1?';background-image:repeating-linear-gradient(90deg,transparent 0 calc(100% / '+dv+' - 3px),var(--ink) calc(100% / '+dv+' - 3px) calc(100% / '+dv+'))':'')+'" class="slot')).join("")}</div>`).join("")}</div>${showTot(w,pt)?`<div class="vbrace"></div>${slot(w,"total","whole",live)}`:""}</div>`;
+  if(w.model==="cmp")return`<div class="dg cmp${showTot(w,pt)?"":" nototal"}"><div class="cmp-rows"><div class="crow">${slot(w,"a","seg seg1 full",live)}</div><div class="crow">${slot(w,"b","seg seg2 short",live)}${slot(w,"diff","diff",live)}</div></div>${showTot(w,pt)?`<div class="vbrace"></div>${slot(w,"total","whole",live)}`:""}</div>`;
   return`<div class="dg"><div class="bar">${MODELS[w.model].parts.map((k,j)=>{const h=slot(w,k,"seg"+(j+1),live);return pt&&pt.pw&&w.model===pt.m?h.replace('class="slot','style="flex:'+pt.pw[j]+' 1 0" class="slot'):h}).join("")}</div><div class="brace"></div><div class="whole-wrap">${slot(w,"whole","whole",live)}</div></div>`;
 }
 function stepLabel(P,pi){const w=PW(P.id,pi);
   if(!w.model&&modelChoices(P,pi).length===1){w.model=modelChoices(P,pi)[0];if(!w.slots[w.model])w.slots[w.model]={};save()}
   if(!w.model)return`<p class="ask">Pick a model first.</p><button class="btn primary add" data-act="prev">Pick a model</button>`;
-  return`<p class="ask">Tap each part of the diagram to label it. Use <span class="num">?</span> for the amount you need to find.</p>${diagram(w,true,P.parts[pi])}${w.model==="cmp"?`<p class="hint">Dashed part: the difference between the bars. Right side: both bars together.</p>`:""}`}
+  return`<p class="ask">Tap each part of the diagram to label it. Use <span class="num">?</span> for the amount you need to find.</p>${diagram(w,true,P.parts[pi])}${w.model==="cmp"?`<p class="hint">Dashed part: the difference between the bars.${showTot(w,P.parts[pi])?" Right side: both bars together.":""}</p>`:""}`}
 function stepsHTML(P,pi){const w=PW(P.id,pi);
   const cell=(i,f)=>{const v=fmt(w.steps[i][f]);return`<button class="cell ${v?"":"empty"}" data-act="ed" data-k="step" data-i="${i}" data-f="${f}">${v?esc(v):"Tap"}</button>`};
   const rows=w.steps.map((r,i)=>{let mark="";
@@ -2376,8 +2422,8 @@ function recordText(P){
   const L=[(P.lesson?P.title:P.title||"Problem")];
   P.parts.forEach((pt,pi)=>{const w=PW(P.id,pi);if(P.parts.length>1)L.push("","Part "+(pt.label||String.fromCharCode(97+pi))+":");
     if(pt.type==="word"){
-      if(w.model&&MODELS[w.model].rows){L.push("Strip diagram ("+MODELS[w.model].t+"):");modelRows(w,pt).forEach(r=>L.push("  "+r.filter(([k])=>k!=="").map(([k])=>"["+slotText(w,k)+"]").join("")));L.push("  Total: "+slotText(w,"total"))}
-      else if(w.model==="cmp")L.push("Strip diagram:","  Bar 1 ["+slotText(w,"a")+"]","  Bar 2 ["+slotText(w,"b")+"] + difference ["+slotText(w,"diff")+"]","  Together: "+slotText(w,"total"));
+      if(w.model&&MODELS[w.model].rows){L.push("Strip diagram ("+MODELS[w.model].t+"):");modelRows(w,pt).forEach(r=>L.push("  "+r.filter(([k])=>k!=="").map(([k])=>"["+slotText(w,k)+"]").join("")));if(showTot(w,pt))L.push("  Total: "+slotText(w,"total"))}
+      else if(w.model==="cmp")L.push("Strip diagram:","  Bar 1 ["+slotText(w,"a")+"]","  Bar 2 ["+slotText(w,"b")+"] + difference ["+slotText(w,"diff")+"]",...(showTot(w,pt)?["  Together: "+slotText(w,"total")]:[]));
       else if(w.model)L.push("Strip diagram:","  "+MODELS[w.model].parts.map(k=>"["+slotText(w,k)+"]").join(""),"  Total: "+slotText(w,"whole"));
       stepLines(w).forEach(s=>L.push(s));L.push(statementText(P,pi));
     }else if(pt.type==="fill"){pt.items.forEach((s,ii)=>{L.push(fillLine(s,w,ii));if(pt.nl)L.push("   Number line: "+[0,1,2].map(k=>fmt(w.blanks[ii+"-nl"+k])||"___").join(", "))});stepLines(w).forEach(s=>L.push("Work: "+s))}
@@ -2415,8 +2461,8 @@ function picture(P){
     if(pt.type==="word"){
       if(w.model&&modelRows(w,pt)){const RM=modelRows(w,pt),bw=640,bh=60,gap=14;
         RM.forEach((r,ri)=>{let xx=X0;const yy=y+ri*(bh+gap);r.forEach(([k,f,c,dv])=>{const sw=bw*f;if(k===""){xx+=sw;return}box(xx,yy,sw,bh,c<0?"#fff":PIC.seg[c],c<0);if(dv>1){x.fillStyle=PIC.ink;for(let q=1;q<dv;q++)x.fillRect(xx+sw*q/dv-1,yy,2,bh)}slotDraw(w,k,xx,yy,sw,bh);xx+=sw})});
-        const th=RM.length*(bh+gap)-gap,bx=X0+bw+14;x.strokeStyle=PIC.ink;x.lineWidth=3;x.beginPath();x.moveTo(bx,y);x.lineTo(bx+16,y);x.lineTo(bx+16,y+th);x.lineTo(bx,y+th);x.moveTo(bx+16,y+th/2);x.lineTo(bx+28,y+th/2);x.stroke();
-        box(bx+36,y+th/2-32,W-X0-(bx+36)-4,64,"#fff");slotDraw(w,"total",bx+36,y+th/2-32,W-X0-(bx+36)-4,64);y+=th+40;
+        const th=RM.length*(bh+gap)-gap,bx=X0+bw+14;if(showTot(w,pt)){x.strokeStyle=PIC.ink;x.lineWidth=3;x.beginPath();x.moveTo(bx,y);x.lineTo(bx+16,y);x.lineTo(bx+16,y+th);x.lineTo(bx,y+th);x.moveTo(bx+16,y+th/2);x.lineTo(bx+28,y+th/2);x.stroke();
+        box(bx+36,y+th/2-32,W-X0-(bx+36)-4,64,"#fff");slotDraw(w,"total",bx+36,y+th/2-32,W-X0-(bx+36)-4,64)}y+=th+40;
       }else if(w.model==="cmp"){const bw=640,bh=64;box(X0,y,bw,bh,PIC.seg[0]);slotDraw(w,"a",X0,y,bw,bh);
         box(X0,y+80,bw*.62,bh,PIC.seg[1]);slotDraw(w,"b",X0,y+80,bw*.62,bh);box(X0+bw*.62,y+80,bw*.38,bh,"#fff",true);slotDraw(w,"diff",X0+bw*.62,y+80,bw*.38,bh);
         const bx=X0+bw+14;x.strokeStyle=PIC.ink;x.lineWidth=3;x.beginPath();x.moveTo(bx,y);x.lineTo(bx+16,y);x.lineTo(bx+16,y+144);x.lineTo(bx,y+144);x.moveTo(bx+16,y+72);x.lineTo(bx+28,y+72);x.stroke();
@@ -2602,7 +2648,7 @@ function renderTeacher(){
    <section class="tcard"><h2>Assigned now</h2>
     <label>Title the student sees<input type="text" id="t-title" value="${esc(assign.title||"")}"></label><div class="row"><button class="btn" data-act="ttitle">Save title</button></div>
     ${list}</section>
-   <section class="tcard"><h2>Student tools</h2><p>Students choose their own tools each time the app opens: bigger buttons and text, colors, read aloud, word buttons, calculator, switch scanning, and more. Nothing is saved, so the next time the app opens the tools start fresh. For a switch user, an adult turns on scanning from the Tools button at the start.</p></section>
+   <section class="tcard"><h2>Student tools</h2><p>Students choose their own tools: bigger buttons and text, colors, read aloud, word buttons, calculator, switch scanning, and more. The choices are remembered in this browser on this device, so the Tools panel opens by itself only the first time. The Tools button changes them later, and Start over in the Tools panel sets them back to the beginning. Only tool choices are remembered: no names and no student work. For a switch user, an adult turns on scanning from the Tools button once.</p></section>
    <section class="tcard"><h2>Send this assignment to another device</h2>
     <p>Assignments and student work are saved on the device where they were made. To assign from your computer, copy this code and paste it on the student’s device.</p>
     <textarea id="t-code" readonly>${esc(code)}</textarea>
@@ -2680,18 +2726,21 @@ const A={
   tmod(d){S.tMod=+d.n;S.tLesson=1;clearMsgs()},
   read(){readProblem();return"skip"},
   readref(){const el=document.querySelector(".refbody");if(el)speak(el.innerText,null,true);return"skip"},
-  opencalc(){S.calcOpen=!S.calcOpen},
+  opencalc(){S.calcOpen=!S.calcOpen;S.calcMsg="";if(!S.calcOpen)stopReading()},
+  calcnum(d){const c=S.calc;c.disp=String(d.v).replace(/,/g,"");c.fresh=false;c.note="";S.calcLast=null;S.calcMsg=""},
+  calcread(){const P=prob(S.pid);if(P)speak(calcProbText(P,curSc()),null,true);return"skip"},
   calcstep(){const L=S.calcLast;if(!L)return;const w=PW(S.pid,curSc().pi);const tk=n=>[{t:"c",v:calcShow(n)}];
     const last=w.steps[w.steps.length-1];
     if(last&&!last.a.length&&!last.b.length&&!last.c.length){last.a=tk(L.a);last.op=L.op;last.b=tk(L.b);last.c=tk(L.res)}
     else w.steps.push({a:tk(L.a),op:L.op,b:tk(L.b),c:tk(L.res)});
-    S.calcLast=null;save();S.scrollSteps=true},
+    S.calcLast=null;save();S.scrollSteps=true;S.calcMsg="Added to your steps. Close the calculator to see them."},
   opentools(){S.ed={mode:"tools"}},
   closetools(){S.ed=null},
+  resettools(){const keep=S.ed;settings=Object.assign({},DEFAULTS);try{localStorage.removeItem(PREFS_KEY)}catch(e){}lastPrefs=JSON.stringify(settings);S.ed=keep},
   tgl(d){settings[d.k]=!settings[d.k]},
   setopt(d){settings[d.k]=/^(breakEvery|scanSpeed)$/.test(d.k)?+d.v:d.v},
   openref(){S.ed={mode:"ref"}},
-  calc(d){calcPress(d.v)},
+  calc(d){S.calcMsg="";calcPress(d.v)},
   fprev(d){S.fi[d.k]=Math.max(0,(S.fi[d.k]||0)-1)},
   fnext(d){S.fi[d.k]=Math.min(+d.n-1,(S.fi[d.k]||0)+1)},
   endbreak(){const id=S.pendingNext;S.pendingNext=null;if(id)A.open({id});else S.view="home"},
@@ -2797,7 +2846,7 @@ document.addEventListener("click",e=>{const b=e.target.closest("[data-act]");if(
   const r=fn(b.dataset,b);if(r!=="skip")render();
   if(["open","next","prev","home","teacher","allwork"].includes(b.dataset.act))window.scrollTo(0,0)});
 if(document.fonts&&document.fonts.ready)document.fonts.ready.then(()=>{if(S.view==="problem")render()});
-S.ed={mode:"tools",first:true};
+if(!savedPrefs)S.ed={mode:"tools",first:true};
 render();
 })();
 </script>
