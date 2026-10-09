@@ -478,6 +478,14 @@ header.top,.progress{flex:none}
 .btn.talk{min-width:calc(var(--tap)*2.6);font-weight:800}
 .btn.talk.on{background:#b42318;border-color:#b42318;color:#fff}
 .sttmsg{margin:4px 0 6px}
+.crow.arow .slot{min-height:calc(var(--tap)*.8)}
+.dg.tight{padding:10px 14px}
+.dg.tight .cmp-rows{gap:6px}
+.dg.tight .slot .nm{min-height:0}
+@supports (height:1svh){:root{--tap:calc(clamp(52px, 8.2svh, 118px) * var(--sz));--gap:clamp(10px, 1.6svh, 22px)}}
+.dg.tight .slot{overflow:hidden}
+.dg.tight .slot .nm{font-size:.62em;line-height:1.1}
+.dg.tight .slot .val{line-height:1.1}
 [hidden]{display:none!important}
 </style>
 </head><body>
@@ -2095,7 +2103,20 @@ function render(){
   readBtns();
   scanReset();
 }
-function addScrollers(){document.querySelectorAll(".sbw").forEach(w=>{const x=w.querySelector(":scope>.sbx");if(!x)return;
+/* shrink strip diagrams so the whole diagram fits on screen without scrolling */
+function fitDg(){document.querySelectorAll(".stage.sbx").forEach(x=>{const dg=x.querySelector(".dg");if(!dg)return;
+  const slots=[...dg.querySelectorAll(".slot")];
+  slots.forEach(s=>{const e=s.querySelector(".val.empty");if(e&&s.getBoundingClientRect().width<140)e.textContent="Tap"});
+  dg.classList.remove("tight");slots.forEach(s=>{s.style.minHeight="";s.style.height="";s.style.paddingBlock=""});
+  if(x.scrollHeight<=x.clientHeight+2)return;
+  dg.classList.add("tight");
+  const main=slots.find(s=>!s.closest(".arow"))||slots[0];if(!main)return;
+  const rows=[...dg.querySelectorAll(".crow,.bar,.whole-wrap")];const n=rows.reduce((s,r)=>s+(r.classList.contains("arow")?.7:1),0)||1;
+  let nh=main.getBoundingClientRect().height;
+  for(let k=0;k<6;k++){const over=x.scrollHeight-x.clientHeight;if(over<=2||nh<=36)break;
+    nh=Math.max(36,Math.floor(nh-over/n)-1);
+    slots.forEach(s=>{const h=s.closest(".arow")?Math.max(32,Math.round(nh*.75)):nh;s.style.minHeight=h+"px";s.style.height=h+"px";s.style.paddingBlock="0"})}})}
+function addScrollers(){fitDg();document.querySelectorAll(".sbw").forEach(w=>{const x=w.querySelector(":scope>.sbx");if(!x)return;
   const old=w.querySelector(":scope>.sbn");if(old)old.remove();w.classList.remove("ovf");
   if(x.scrollHeight<=x.clientHeight+4)return;
   w.classList.add("ovf");if(x.scrollHeight<=x.clientHeight+4){w.classList.remove("ovf");return}
@@ -2164,7 +2185,7 @@ function modelRows(w,pt){return pt&&pt.geo&&w.model===pt.m?pt.geo:MODELS[w.model
 function diagram(w,live,pt){
   if(!w.model)return"";
   const RM=modelRows(w,pt);
-  if(RM)return`<div class="dg cmp"><div class="cmp-rows">${RM.map(r=>`<div class="crow">${r.map(([k,f,c,dv],j)=>k===""?`<span class="gap" style="flex:0 0 ${f*100}%"></span>`:slot(w,k,(c<0?"diff":"seg seg"+(c+1))+(j&&r[j-1][0]!==""?" joined":""),live).replace('class="slot','style="flex:0 0 '+(f*100)+'%'+(dv>1?';background-image:repeating-linear-gradient(90deg,transparent 0 calc(100% / '+dv+' - 3px),var(--ink) calc(100% / '+dv+' - 3px) calc(100% / '+dv+'))':'')+'" class="slot')).join("")}</div>`).join("")}</div><div class="vbrace"></div>${slot(w,"total","whole",live)}</div>`;
+  if(RM)return`<div class="dg cmp"><div class="cmp-rows">${RM.map(r=>`<div class="crow${r[0][0]===""?" arow":""}">${r.map(([k,f,c,dv],j)=>k===""?`<span class="gap" style="flex:0 0 ${f*100}%"></span>`:slot(w,k,(c<0?"diff":"seg seg"+(c+1))+(j&&r[j-1][0]!==""?" joined":""),live).replace('class="slot','style="flex:0 0 '+(f*100)+'%'+(dv>1?';background-image:repeating-linear-gradient(90deg,transparent 0 calc(100% / '+dv+' - 3px),var(--ink) calc(100% / '+dv+' - 3px) calc(100% / '+dv+'))':'')+'" class="slot')).join("")}</div>`).join("")}</div><div class="vbrace"></div>${slot(w,"total","whole",live)}</div>`;
   if(w.model==="cmp")return`<div class="dg cmp"><div class="cmp-rows"><div class="crow">${slot(w,"a","seg seg1 full",live)}</div><div class="crow">${slot(w,"b","seg seg2 short",live)}${slot(w,"diff","diff",live)}</div></div><div class="vbrace"></div>${slot(w,"total","whole",live)}</div>`;
   return`<div class="dg"><div class="bar">${MODELS[w.model].parts.map((k,j)=>{const h=slot(w,k,"seg"+(j+1),live);return pt&&pt.pw&&w.model===pt.m?h.replace('class="slot','style="flex:'+pt.pw[j]+' 1 0" class="slot'):h}).join("")}</div><div class="brace"></div><div class="whole-wrap">${slot(w,"whole","whole",live)}</div></div>`;
 }
