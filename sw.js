@@ -1,5 +1,5 @@
 /* Offline support. Bump VERSION when index.html changes so devices pick up the update. */
-const VERSION = "v14-stop";
+const VERSION = "v15-scale-talk";
 const CORE = ["./", "./index.html", "./manifest.webmanifest", "./icon-192.png", "./icon-512.png", "./apple-touch-icon.png"];
 self.addEventListener("install", e => {
   e.waitUntil(caches.open(VERSION).then(c => c.addAll(CORE)).then(() => self.skipWaiting()));
