@@ -914,6 +914,7 @@ m1_l1et:"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAZAAAADLCAAAAABl6pqQAAAim
 <script>
 (function(){
 /* ---------- library index ---------- */
+const MODEL_GEO={"M2-L5-ET-2": [[["a", 1, 0]], [["b", 0.6, 1], ["d1", 0.4, -1]], [["c", 0.6, 2], ["d2", 0.22, -1]]], "M2-L5-PS-4": [[["a", 0.6, 0], ["d1", 0.2, -1]], [["b", 0.8, 1]], [["c", 0.8, 2], ["d2", 0.18, -1]]], "M1-L7-AP-1": [[["a", 0.5, 0], ["d1", 0.42, -1]], [["b", 0.92, 1]], [["c", 0.8, 2], ["d2", 0.12, -1]]], "M1-L12-PS-2": [[["a", 0.32, 0], ["d1", 0.45, -1]], [["b", 0.77, 1]], [["c", 0.55, 2]]], "M1-L12-ET-1": [[["a", 0.65, 0], ["d1", 0.22, -1]], [["b", 0.87, 1]], [["c", 0.87, 2]]], "M1-L18-ET-1": [[["a", 0.55, 0]], [["b", 0.36, 1], ["d1", 0.19, -1]], [["c", 0.55, 2], ["d2", 0.42, -1]]]};
 const MODEL_TAGS={"M2-L1-AP-1": "ppw3", "M2-L1-PS-4": "cmp", "M2-L1-PS-5": "ppw2", "M2-L1-PS-6": "ppw2", "M2-L1-PS-7": "cmp", "M2-L1-ET-4": "ppw2", "M2-L2-AP-1": "ppw2", "M2-L2-PS-4": "ppw2", "M2-L2-PS-5": "ppw2", "M2-L2-PS-6": "cmp", "M2-L2-PS-7": "cmp", "M2-L2-ET-2": "cmp", "M2-L3-AP-1": "ppw2", "M2-L3-PS-4": "ppw3", "M2-L3-PS-5": "ppw2", "M2-L3-PS-6": "ppw2", "M2-L3-ET-3": "ppw2", "M2-L4-AP-1": "ppw2", "M2-L5-PS-1": "cmp", "M2-L5-PS-2": "eq2x2", "M2-L5-PS-3": "eq2x3", "M2-L5-PS-4": "cmp3", "M2-L5-PS-5": "ppw3", "M2-L5-PS-6": "cmp3", "M2-L5-ET-1": "ppw4", "M2-L5-ET-2": "cmp3", "M1-L7-AP-1": "cmp3", "M1-L11-PS-2": "ppw2", "M1-L11-PS-3": "ppw2", "M1-L11-PS-4": "cmp", "M1-L11-ET-2": "ppw3", "M1-L12-AP-1": "cmp", "M1-L12-PS-1": "cmp", "M1-L12-PS-2": "cmp3", "M1-L12-PS-3": "cmp", "M1-L12-PS-4": "ppw4", "M1-L12-ET-1": "cmp3", "M1-L13-PS-2": "ppw2", "M1-L13-PS-3": "cmp", "M1-L13-PS-4": "ppw2", "M1-L13-PS-5": "ppw2", "M1-L13-ET-2": "ppw2", "M1-L14-PS-2": "ppw2", "M1-L14-PS-3": "ppw2", "M1-L14-PS-4": "ppw2", "M1-L14-PS-5": "ppw2", "M1-L14-ET-3": "ppw2", "M1-L15-PS-2": "ppw2", "M1-L15-PS-3": "cmp", "M1-L15-PS-4": "ppw2", "M1-L15-ET-1": "ppw2", "M1-L15-ET-2": "ppw2", "M1-L16-AP-1": "ppw2", "M1-L16-PS-1": "ppw3", "M1-L16-PS-2": "cmp", "M1-L16-PS-3": "ppw3", "M1-L16-PS-4": "cmp", "M1-L16-PS-5": "ppw3", "M1-L16-ET-1": "ppw3", "M1-L17-AP-1": "ppw3", "M1-L17-PS-1": "cmp", "M1-L17-PS-2": "cmp", "M1-L17-PS-3": "cmp", "M1-L17-PS-4": "cmp", "M1-L17-ET-1": "cmp", "M1-L18-AP-1": "cmp", "M1-L18-PS-1": "cmp3", "M1-L18-PS-2": "ppw4", "M1-L18-PS-3": "ppw4", "M1-L18-ET-1": "cmp3", "M1-L19-AP-1": "ppw3", "M1-L19-PS-4": "ppw3", "M1-L19-ET-2": "ppw3"};
 const MODULES=[
   {n:1,title:"Place Value, Rounding, and Algorithms for Addition and Subtraction",lessons:LIB1},
@@ -922,7 +923,7 @@ const LIBMAP={};
 MODULES.forEach(M=>M.lessons.forEach(L=>L.sections.forEach(S=>S.problems.forEach(p=>{
   const id="M"+M.n+"-L"+L.n+"-"+S.key+"-"+p.n;
   LIBMAP[id]=Object.assign({id,mod:M.n,lesson:L.n,sec:S.name,title:"Module "+M.n+" Lesson "+L.n+" "+S.name+" · Problem "+p.n},p);
-  if(MODEL_TAGS[id])p.parts.forEach(pt=>{if(pt.type==="word")pt.m=MODEL_TAGS[id]});
+  if(MODEL_TAGS[id])p.parts.forEach(pt=>{if(pt.type==="word"){pt.m=MODEL_TAGS[id];if(MODEL_GEO[id])pt.geo=MODEL_GEO[id]}});
 }))));
 const pidOf=(m,l,k,n)=>"M"+m+"-L"+l+"-"+k+"-"+n;
 const tagOf=P=>"M"+P.mod+" · Lesson "+P.lesson+" "+P.sec;
@@ -1314,9 +1315,10 @@ function slot(w,k,cls,live){
   const s=(w.slots[w.model]||{})[k]||{};const v=fmt(s.tokens);const tag=live?"button":"div";
   return`<${tag} class="slot ${cls}" ${live?`data-act="slot" data-k="${k}"`:""}><span class="nm">${esc(s.name||"")}</span><span class="val ${v?"":"empty"}">${v?esc(v):(live?"Tap to label":"")}</span></${tag}>`;
 }
-function diagram(w,live){
+function modelRows(w,pt){return pt&&pt.geo&&w.model===pt.m?pt.geo:MODELS[w.model].rows}
+function diagram(w,live,pt){
   if(!w.model)return"";
-  const RM=MODELS[w.model].rows;
+  const RM=modelRows(w,pt);
   if(RM)return`<div class="dg cmp"><div class="cmp-rows">${RM.map(r=>`<div class="crow">${r.map(([k,f,c],j)=>slot(w,k,(c<0?"diff":"seg seg"+(c+1))+(j?" joined":""),live).replace('class="slot','style="flex:0 0 '+(f*100)+'%" class="slot')).join("")}</div>`).join("")}</div><div class="vbrace"></div>${slot(w,"total","whole",live)}</div>`;
   if(w.model==="cmp")return`<div class="dg cmp"><div class="cmp-rows"><div class="crow">${slot(w,"a","seg seg1 full",live)}</div><div class="crow">${slot(w,"b","seg seg2 short",live)}${slot(w,"diff","diff",live)}</div></div><div class="vbrace"></div>${slot(w,"total","whole",live)}</div>`;
   return`<div class="dg"><div class="bar">${MODELS[w.model].parts.map((k,j)=>slot(w,k,"seg"+(j+1),live)).join("")}</div><div class="brace"></div><div class="whole-wrap">${slot(w,"whole","whole",live)}</div></div>`;
@@ -1324,7 +1326,7 @@ function diagram(w,live){
 function stepLabel(P,pi){const w=PW(P.id,pi);
   if(!w.model&&modelChoices(P,pi).length===1){w.model=modelChoices(P,pi)[0];if(!w.slots[w.model])w.slots[w.model]={};save()}
   if(!w.model)return`<p class="ask">Pick a model first.</p><button class="btn primary add" data-act="prev">Pick a model</button>`;
-  return`<p class="ask">Tap each part of the diagram to label it. Use <span class="num">?</span> for the amount you need to find.</p>${diagram(w,true)}${w.model==="cmp"?`<p class="hint">Dashed part: the difference between the bars. Right side: both bars together.</p>`:""}`}
+  return`<p class="ask">Tap each part of the diagram to label it. Use <span class="num">?</span> for the amount you need to find.</p>${diagram(w,true,P.parts[pi])}${w.model==="cmp"?`<p class="hint">Dashed part: the difference between the bars. Right side: both bars together.</p>`:""}`}
 function stepsHTML(P,pi){const w=PW(P.id,pi);
   const cell=(i,f)=>{const v=fmt(w.steps[i][f]);return`<button class="cell ${v?"":"empty"}" data-act="ed" data-k="step" data-i="${i}" data-f="${f}">${v?esc(v):"Tap"}</button>`};
   const rows=w.steps.map((r,i)=>{let mark="";
@@ -1413,7 +1415,7 @@ function recordText(P){
   const L=[(P.lesson?P.title:P.title||"Problem")];
   P.parts.forEach((pt,pi)=>{const w=PW(P.id,pi);if(P.parts.length>1)L.push("","Part "+(pt.label||String.fromCharCode(97+pi))+":");
     if(pt.type==="word"){
-      if(w.model&&MODELS[w.model].rows){L.push("Strip diagram ("+MODELS[w.model].t+"):");MODELS[w.model].rows.forEach(r=>L.push("  "+r.map(([k])=>"["+slotText(w,k)+"]").join("")));L.push("  Total: "+slotText(w,"total"))}
+      if(w.model&&MODELS[w.model].rows){L.push("Strip diagram ("+MODELS[w.model].t+"):");modelRows(w,pt).forEach(r=>L.push("  "+r.map(([k])=>"["+slotText(w,k)+"]").join("")));L.push("  Total: "+slotText(w,"total"))}
       else if(w.model==="cmp")L.push("Strip diagram:","  Bar 1 ["+slotText(w,"a")+"]","  Bar 2 ["+slotText(w,"b")+"] + difference ["+slotText(w,"diff")+"]","  Together: "+slotText(w,"total"));
       else if(w.model)L.push("Strip diagram:","  "+MODELS[w.model].parts.map(k=>"["+slotText(w,k)+"]").join(""),"  Total: "+slotText(w,"whole"));
       stepLines(w).forEach(s=>L.push(s));L.push(statementText(P,pi));
@@ -1448,7 +1450,7 @@ function picture(P){
   P.parts.forEach((pt,pi)=>{const w=PW(P.id,pi);
     if(P.parts.length>1){x.font=F(18,800);x.fillStyle=PIC.ink;x.fillText("Part "+(pt.label||String.fromCharCode(97+pi)),X0,y);y+=30}
     if(pt.type==="word"){
-      if(w.model&&MODELS[w.model].rows){const RM=MODELS[w.model].rows,bw=640,bh=60,gap=14;
+      if(w.model&&MODELS[w.model].rows){const RM=modelRows(w,pt),bw=640,bh=60,gap=14;
         RM.forEach((r,ri)=>{let xx=X0;const yy=y+ri*(bh+gap);r.forEach(([k,f,c])=>{const sw=bw*f;box(xx,yy,sw,bh,c<0?"#fff":PIC.seg[c],c<0);slotDraw(w,k,xx,yy,sw,bh);xx+=sw})});
         const th=RM.length*(bh+gap)-gap,bx=X0+bw+14;x.strokeStyle=PIC.ink;x.lineWidth=3;x.beginPath();x.moveTo(bx,y);x.lineTo(bx+16,y);x.lineTo(bx+16,y+th);x.lineTo(bx,y+th);x.moveTo(bx+16,y+th/2);x.lineTo(bx+28,y+th/2);x.stroke();
         box(bx+36,y+th/2-32,W-X0-(bx+36)-4,64,"#fff");slotDraw(w,"total",bx+36,y+th/2-32,W-X0-(bx+36)-4,64);y+=th+40;
