@@ -1,5 +1,5 @@
 /* Offline support. Bump VERSION when index.html changes so devices pick up the update. */
-const VERSION = "v32-diagrams";
+const VERSION = "v33-fit";
 const CORE = ["./", "./index.html", "./manifest.webmanifest", "./icon-192.png", "./icon-512.png", "./apple-touch-icon.png"];
 self.addEventListener("install", e => {
   e.waitUntil(caches.open(VERSION).then(c => c.addAll(CORE)).then(() => self.skipWaiting()));

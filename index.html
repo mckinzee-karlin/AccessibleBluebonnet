@@ -15,7 +15,7 @@
   --ok:#17783F; --warn:#A84B06; --scrim:rgba(14,22,32,.55);
   --f-ui:"Atkinson Hyperlegible Next","Atkinson Hyperlegible",system-ui,-apple-system,"Segoe UI",sans-serif;
   --f-num:"Atkinson Hyperlegible Mono",ui-monospace,"SF Mono",Menlo,monospace;
-  --sz:1; --tap:calc(clamp(52px, 8.2vh, 118px) * var(--sz)); --fs:calc(clamp(15px, 1vw + .95vh, 27px) * (0.9 + 0.1 * var(--sz))); --gap:clamp(10px, 1.6vh, 22px);
+  --sz:1; --tapb:calc(clamp(52px, 8.2vh, 118px) * var(--sz)); --tap:var(--tapb); --fs:calc(clamp(15px, 1vw + .95vh, 27px) * (0.9 + 0.1 * var(--sz))); --gap:clamp(10px, 1.6vh, 22px);
 }
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
   --bg:#0F1620; --surface:#18222F; --ink:#E8EEF5; --muted:#A5B2C1; --line:#3A4858;
@@ -214,9 +214,9 @@ button:active{transform:translateY(1px)}
 .gt th{background:var(--bg);font-size:.8em}
 .chip-tag{display:inline-block;font-size:.6em;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);border:2px solid var(--line);border-radius:999px;padding:2px 10px}
 .items{display:flex;flex-direction:column;gap:var(--gap)}
-.item{background:var(--surface);border:3px solid var(--line);border-radius:18px;padding:12px 18px;line-height:2.6;font-size:1.05em}
+.item{overflow:hidden;background:var(--surface);border:3px solid var(--line);border-radius:18px;padding:12px 18px;line-height:2.6;font-size:1.05em}
 .item .cell{vertical-align:middle;margin:0 6px}
-.choice{display:inline-flex;gap:8px;vertical-align:middle;margin:0 6px}
+.choice{display:inline-flex;flex-wrap:wrap;gap:8px;vertical-align:middle;margin:0 6px}
 .choice .cell{min-width:var(--tap);font-size:1.4em;margin:0}
 .cell.on{background:var(--accent);color:var(--accent-ink);border-color:var(--accent);border-style:solid}
 .tablewrap{overflow-x:auto;max-width:100%}
@@ -270,7 +270,7 @@ details.tcard summary{font-weight:800;cursor:pointer}
 .alg .adig{font-family:var(--f-num);font-size:1.6em;font-weight:700;width:calc(var(--tap)*.8)}
 .alg .aline td{border-top:4px solid var(--ink)}
 .acell{width:calc(var(--tap)*.8);height:var(--tap);border:3px dashed var(--line);border-radius:10px;background:var(--bg);font-family:var(--f-num);font-size:1.5em;font-weight:700;color:var(--accent);cursor:pointer}
-.acell.c{height:calc(var(--tap)*.7);font-size:1.05em}
+.acell.c{height:calc(var(--tap)*.8);font-size:1.05em}
 .acell.sel{border:4px solid var(--focus);background:var(--surface)}
 .apad{display:grid;grid-template-columns:repeat(3,var(--tap));gap:10px}
 .apad .key{min-height:var(--tap)}
@@ -285,7 +285,7 @@ details.tcard summary{font-weight:800;cursor:pointer}
   .slot .val.empty{font-size:.85em}
   .slot .nm{font-size:.8em}
   .acell{width:var(--tap);height:calc(var(--tap)*.85);font-size:1.8em}
-  .acell.c{height:calc(var(--tap)*.62);font-size:1.2em}
+  .acell.c{height:calc(var(--tap)*.78);font-size:1.2em}
   .alg .adig{font-size:2em;width:var(--tap);padding:0 4px}
   .apad{grid-template-columns:repeat(3,calc(var(--tap)*1.15))}
   .apad .key{min-height:calc(var(--tap)*.85)}
@@ -371,6 +371,7 @@ header.top,.progress{flex:none}
 #app>.sbw.grow{flex:1 1 0}
 .probw>.prob{flex:1 1 auto}
 .stage{flex:1 1 auto}
+.stage.sbx{--tap:calc(var(--tapb)*var(--fit,1));font-size:calc(1em*var(--fz,1))}
 .sbw.ovf>.sbx{padding-right:calc(var(--tap) + 20px)}
 .sbn{position:absolute;right:4px;top:4px;bottom:4px;display:flex;flex-direction:column;justify-content:space-between;gap:8px;pointer-events:none;z-index:5}
 .sbn .btn{pointer-events:auto;width:var(--tap);min-height:var(--tap);padding:0 2px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:.72em;line-height:1.15;box-shadow:0 3px 10px rgba(0,0,0,.18)}
@@ -425,12 +426,12 @@ header.top,.progress{flex:none}
 .alg.ldiv .ldfirst{border-left:4px solid var(--ink);border-top-left-radius:14px}
 .alg.ldiv .wprod td{border-bottom:3px solid var(--ink)}
 .alg.ldiv .wprod td:first-child{border-bottom:0}
-.acell.wk{height:calc(var(--tap)*.7);font-size:1.2em}
+.acell.wk{height:calc(var(--tap)*.85);font-size:1.2em}
 .remrow{display:flex;align-items:center;gap:10px;margin-top:10px}
 .remrow .acell{width:calc(var(--tap)*1.4)}
 
 .figwrap{background:#fff;border:3px solid var(--line);border-radius:14px;padding:8px;align-self:flex-start;max-width:100%}
-.figwrap .figure{display:block;max-width:100%;max-height:42vh;width:auto;height:auto;border:0;padding:0}
+.figwrap .figure{display:block;max-width:100%;max-height:min(42vh,calc(var(--tap)*5.3));width:auto;height:auto;border:0;padding:0}
 
 .selgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,calc(var(--tap)*2.2)),1fr));gap:12px}
 .selgrid.wide{grid-template-columns:repeat(auto-fill,minmax(min(100%,340px),1fr))}
@@ -456,7 +457,7 @@ header.top,.progress{flex:none}
 
 .protwrap{display:flex;gap:var(--gap);flex-wrap:wrap;align-items:flex-start}
 .protimg{position:relative;background:#fff;border:3px solid var(--line);border-radius:14px;padding:8px;overflow:hidden;max-width:100%}
-.protimg .figure{display:block;max-width:100%;max-height:52vh;width:auto;height:auto}
+.protimg .figure{display:block;max-width:100%;max-height:min(52vh,calc(var(--tap)*6.5));width:auto;height:auto}
 .protov{position:absolute;left:50%;top:50%;width:min(340px,70%);pointer-events:none;transform-origin:50% 94%}
 .protsvg{display:block;width:100%;height:auto}
 .protsvg .pbody{fill:rgba(255,236,170,.35);stroke:#7a5b00;stroke-width:1.5}
@@ -482,7 +483,7 @@ header.top,.progress{flex:none}
 .dg.tight{padding:10px 14px}
 .dg.tight .cmp-rows{gap:6px}
 .dg.tight .slot .nm{min-height:0}
-@supports (height:1svh){:root{--tap:calc(clamp(52px, 8.2svh, 118px) * var(--sz));--gap:clamp(10px, 1.6svh, 22px)}}
+@supports (height:1svh){:root{--tapb:calc(clamp(52px, 8.2svh, 118px) * var(--sz));--gap:clamp(10px, 1.6svh, 22px)}}
 .dg.tight .slot{overflow:hidden}
 .dg.tight .slot .nm{font-size:.62em;line-height:1.1}
 .dg.tight .slot .val{line-height:1.1}
@@ -555,10 +556,10 @@ header.top,.progress{flex:none}
 .models.all9 .mini .br{height:10px}
 .models.all9 .mini.rowsm .mr{height:14px}
 .sunits{min-height:calc(var(--tap)*.95)}
-.stop{min-height:calc(var(--tap)*.6)}
-.sglab{min-height:calc(var(--tap)*.65)}
+.stop{min-height:calc(var(--tap)*.8)}
+.sglab{min-height:calc(var(--tap)*.8)}
 .sbar{gap:6px;padding:10px}
-.sbctl .key{min-height:calc(var(--tap)*.7)}
+.sbctl .key{min-height:calc(var(--tap)*.85)}
 .segrow{margin:2px 0 8px}
 .segrow .btn{min-height:calc(var(--tap)*.8)}
 /* answer panel: compact answer line with Talk and Keyboard */
@@ -594,6 +595,72 @@ html:root.th-cvi img.figure{background:#fff}
 html:root.th-cvi .key.eqk,html:root.th-cvi .btn.talk.on,html:root.th-cvi .btn.stopread{background:#FF2020;border-color:#FF2020;color:#000}
 .models.all9{grid-template-columns:repeat(5,minmax(0,1fr))}
 @media (max-width:999px){.models.all9{grid-template-columns:repeat(2,minmax(0,1fr))}}
+/* wide screens: put steps and answer (or grid and check-your-work) side by side; columns collapse as the buttons grow */
+.twocol{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,max(380px,calc(var(--tap)*7.5))),1fr));gap:var(--gap);align-items:start}
+.twocol>.col{display:flex;flex-direction:column;gap:var(--gap);min-width:0}
+.twocol>.worksec{border-top:0;padding-top:0}
+.items{grid-template-columns:repeat(auto-fit,minmax(min(100%,calc(var(--tap)*8)),1fr));display:grid;align-items:start}
+.items.one{display:flex}
+.item{line-height:1.5}
+@media (min-width:900px) and (min-aspect-ratio:13/10){
+  .stage.hasfig{display:grid;grid-template-columns:minmax(0,max-content) minmax(0,1fr);column-gap:var(--gap);row-gap:0;align-items:start}
+  .stage.hasfig>*:not(.figwrap){margin-bottom:var(--gap)}
+  .stage.hasfig>.figwrap{grid-column:1;grid-row:1 / span 20}
+  .stage.hasfig>*:not(.figwrap){grid-column:2;min-width:0}
+  .stage.hasfig .figwrap .figure{max-height:min(66vh,calc(var(--tap)*7.5))}
+}
+/* tighter spacing used only when the buttons are already at their minimum size and the screen still does not fit */
+.stage.cmp1{--gap:8px}
+.stage.cmp1 .item{padding:4px 12px;line-height:1.3}
+.stage.cmp1 .eq{padding:8px 10px;gap:8px}
+.stage.cmp1 .frame{padding:10px 14px;line-height:1.9}
+.stage.cmp1 .ask{font-size:.95em;margin:0}
+.stage.cmp1 .mcard{padding:6px 10px}
+.stage.cmp1 .wt{border-spacing:5px}
+.stage.cmp2{--gap:5px;padding-block:2px 4px}
+.stage.cmp2 .item{padding:2px 10px;line-height:1.2;border-width:2px}
+.stage.cmp2 .eq{padding:5px 8px;gap:6px}
+.stage.cmp2 .frame{padding:6px 12px;line-height:1.6}
+.stage.cmp2 .ask{font-size:.9em}
+.stage.cmp2 .mcard{padding:4px 8px;gap:2px}
+.stage.cmp2 .mini{gap:3px}
+.stage.cmp2 .models.all9 .mini .r,.stage.cmp2 .models.all9 .mini .short{height:18px}
+.stage.cmp2 .models.all9 .mini .br{height:6px}
+.stage.cmp2 .models.all9 .mini.rowsm .mr{height:9px}
+.stage.cmp2 .wt{border-spacing:3px}
+.stage.cmp2 .wt th{padding:2px 6px}
+.stage.cmp2 .order .seq{padding:6px 10px}
+.choice .cell{white-space:normal}
+.choice .cell.nw{white-space:nowrap}
+.stage.hasfig .figwrap{max-width:min(46vw,calc(var(--tap)*10))}
+/* short screens (Chromebook, small laptop windows): trim the fixed header and footer so the answer area keeps the room */
+@media (max-height:780px){
+  #app{padding-block:4px 0}
+  .top{padding-block:0 4px;gap:8px}
+  .top .btn{min-height:max(46px,calc(var(--tap)*.85))}
+  .chip-tag{display:none}
+  .progress{margin:4px 0 2px}
+  .progress li{padding-top:3px;font-size:.58em}
+  .prob{padding:6px 14px}
+  .navbar{padding-block:6px calc(6px + env(safe-area-inset-bottom,0px))}
+  .navbar .btn{min-height:max(46px,calc(var(--tap)*.85))}
+  .stage{padding-block:4px 6px}
+}
+.stage.cmp1 .alg td{padding:2px}
+.stage.cmp2 .alg td{padding:0}
+.stage.cmp2 .remrow{margin-top:4px}
+.stage.cmp1 .algwrap{gap:16px}
+.stage.cmp2 .algwrap{gap:12px}
+.stage.cmp2 .apad{gap:6px}
+.stage.cmp1 .worksec,.stage.cmp2 .worksec{padding-top:0;border-top:0}
+.tablewrap.split{display:flex;flex-wrap:wrap;gap:var(--gap);align-items:flex-start;overflow:visible}
+.tablewrap.split .wt{flex:0 1 auto}
+@media (max-height:780px){
+  .progress{flex-wrap:nowrap;overflow:hidden}
+  .progress li{min-width:0;white-space:nowrap;text-overflow:ellipsis;overflow:hidden}
+}
+.bar>.slot.diff{border:4px dashed var(--ink);border-left:0;background:var(--unknown)}
+.bar>.slot.diff.joined{border-left:0}
 [hidden]{display:none!important}
 </style>
 </head><body>
@@ -3179,7 +3246,7 @@ m7p98n3:"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAvEAAAI9BAMAAABBPDodAAAAM
 const MODEL_GEO={"M2-L5-ET-2": [[["a", 1, 0]], [["b", 0.6, 1], ["d1", 0.4, -1]], [["c", 0.6, 2], ["d2", 0.22, -1]]], "M2-L5-PS-4": [[["a", 0.6, 0], ["d1", 0.2, -1]], [["b", 0.8, 1]], [["c", 0.8, 2], ["d2", 0.18, -1]]], "M1-L7-AP-1": [[["a", 0.5, 0], ["d1", 0.42, -1]], [["b", 0.92, 1]], [["c", 0.8, 2], ["d2", 0.12, -1]]], "M1-L12-PS-2": [[["a", 0.32, 0], ["d1", 0.45, -1]], [["b", 0.77, 1]], [["c", 0.55, 2]]], "M1-L12-ET-1": [[["a", 0.65, 0], ["d1", 0.22, -1]], [["b", 0.87, 1]], [["c", 0.87, 2]]], "M1-L18-ET-1": [[["a", 0.55, 0]], [["b", 0.36, 1], ["d1", 0.19, -1]], [["c", 0.55, 2], ["d2", 0.42, -1]]]};
 function geoFor(m,k){k=Math.max(2,Math.min(30,k||3));
   if(m==="mcmp")return[[["a",Math.max(1/k,.1),0]],[["b",1,1,k]]];
-  if(m==="eqg")return[[["p",1/k,0],["rest",(k-1)/k,1,k-1]]];return null}
+  if(m==="eqg"){const p=Math.max(1/k,.12);return[[["p",p,0],["rest",1-p,1,k-1]]]}return null}
 const MODEL_TAGS={"M2-L1-AP-1": "ppw3", "M2-L1-PS-4": "cmp", "M2-L1-PS-5": "ppw2", "M2-L1-PS-6": "ppw2", "M2-L1-PS-7": "cmp", "M2-L1-ET-4": "ppw2", "M2-L2-AP-1": "ppw2", "M2-L2-PS-4": "ppw2", "M2-L2-PS-5": "ppw2", "M2-L2-PS-6": "cmp", "M2-L2-PS-7": "cmp", "M2-L2-ET-2": "cmp", "M2-L3-AP-1": "ppw2", "M2-L3-PS-4": "ppw3", "M2-L3-PS-5": "ppw2", "M2-L3-PS-6": "ppw2", "M2-L3-ET-3": "ppw2", "M2-L4-AP-1": "ppw2", "M2-L5-PS-1": "cmp", "M2-L5-PS-2": "eq2x2", "M2-L5-PS-3": "eq2x3", "M2-L5-PS-4": "cmp3", "M2-L5-PS-5": "ppw3", "M2-L5-PS-6": "cmp3", "M2-L5-ET-1": "ppw4", "M2-L5-ET-2": "cmp3", "M1-L7-AP-1": "cmp3", "M1-L11-PS-2": "ppw2", "M1-L11-PS-3": "ppw2", "M1-L11-PS-4": "cmp", "M1-L11-ET-2": "ppw3", "M1-L12-AP-1": "cmp", "M1-L12-PS-1": "cmp", "M1-L12-PS-2": "cmp3", "M1-L12-PS-3": "cmp", "M1-L12-PS-4": "ppw4", "M1-L12-ET-1": "cmp3", "M1-L13-PS-2": "ppw2", "M1-L13-PS-3": "cmp", "M1-L13-PS-4": "ppw2", "M1-L13-PS-5": "ppw2", "M1-L13-ET-2": "ppw2", "M1-L14-PS-2": "ppw2", "M1-L14-PS-3": "ppw2", "M1-L14-PS-4": "ppw2", "M1-L14-PS-5": "ppw2", "M1-L14-ET-3": "ppw2", "M1-L15-PS-2": "ppw2", "M1-L15-PS-3": "cmp", "M1-L15-PS-4": "ppw2", "M1-L15-ET-1": "ppw2", "M1-L15-ET-2": "ppw2", "M1-L16-AP-1": "ppw2", "M1-L16-PS-1": "ppw3", "M1-L16-PS-2": "cmp", "M1-L16-PS-3": "ppw3", "M1-L16-PS-4": "cmp", "M1-L16-PS-5": "ppw3", "M1-L16-ET-1": "ppw3", "M1-L17-AP-1": "ppw3", "M1-L17-PS-1": "cmp", "M1-L17-PS-2": "cmp", "M1-L17-PS-3": "cmp", "M1-L17-PS-4": "cmp", "M1-L17-ET-1": "cmp", "M1-L18-AP-1": "cmp", "M1-L18-PS-1": "cmp3", "M1-L18-PS-2": "ppw4", "M1-L18-PS-3": "ppw4", "M1-L18-ET-1": "cmp3", "M1-L19-AP-1": "ppw3", "M1-L19-PS-4": "ppw3", "M1-L19-ET-2": "ppw3"};
 if(typeof EXTRA_TAGS!=="undefined")Object.assign(MODEL_TAGS,EXTRA_TAGS);
 const MODULES=[
@@ -3237,7 +3304,7 @@ const LIBMAP={};
 MODULES.forEach(M=>M.lessons.forEach(L=>L.sections.forEach(S=>S.problems.forEach(p=>{
   const id="M"+M.n+"-L"+L.n+"-"+S.key+"-"+p.n;
   LIBMAP[id]=Object.assign({id,mod:M.n,lesson:L.n,sec:S.name,title:"Module "+M.n+" Lesson "+L.n+" "+S.name+" · Problem "+p.n},p);
-  if(MODEL_TAGS[id])p.parts.forEach(pt=>{if(pt.type==="word"){const [m,k]=MODEL_TAGS[id].split(":");pt.m=m;if(/^(cmp|cmp3|eq2x2|eq2x3)$/.test(m)&&!NEEDS_TOTAL.has(id))pt.noTotal=true;if(SCALE[id]){const g=scaleGeo(m,SCALE[id]);if(g.geo)pt.geo=g.geo;if(g.pw)pt.pw=g.pw}else if(m==="eqgu")pt.geo=k==="r"?EQGU_R:EQGU;else if(MODEL_GEO[id])pt.geo=MODEL_GEO[id];else if(k)pt.geo=geoFor(m,+k)}});
+  if(MODEL_TAGS[id])p.parts.forEach(pt=>{if(pt.type==="word"){const [m,k]=MODEL_TAGS[id].split(":");pt.m=m;if(k&&/^\d+$/.test(k))pt.k=+k;if(/^(cmp|cmp3|eq2x2|eq2x3)$/.test(m)&&!NEEDS_TOTAL.has(id))pt.noTotal=true;if(SCALE[id]){const g=scaleGeo(m,SCALE[id]);if(g.geo)pt.geo=g.geo;if(g.pw)pt.pw=g.pw}else if(m==="eqgu")pt.geo=k==="r"?EQGU_R:EQGU;else if(MODEL_GEO[id])pt.geo=MODEL_GEO[id];else if(k)pt.geo=geoFor(m,+k)}});
 }))));
 const pidOf=(m,l,k,n)=>"M"+m+"-L"+l+"-"+k+"-"+n;
 const tagOf=P=>"M"+P.mod+" · Lesson "+P.lesson+" "+P.sec;
@@ -3267,7 +3334,7 @@ assign.items.forEach(i=>{if(i.ref)i.ref=migrateId(i.ref)});
 {const nw={};Object.keys(work).forEach(k=>nw[migrateId(k)]=work[k]);work=nw;}
 const save=()=>{LS.set("sdw2.assign",assign);SS.set("sdw2.work",work);savePrefs()};
 
-const S={view:"home",pid:null,scr:0,ed:null,msg:null,err:null,copyText:null,tMod:2,tLesson:5,doneCount:0,lastRead:"",calc:{disp:"0",acc:null,op:null,fresh:true,note:""},fi:{},tSel:{},pdf:null,tEdit:null};
+const S={cap:{},view:"home",pid:null,scr:0,ed:null,msg:null,err:null,copyText:null,tMod:2,tLesson:5,doneCount:0,lastRead:"",calc:{disp:"0",acc:null,op:null,fresh:true,note:""},fi:{},tSel:{},pdf:null,tEdit:null};
 const app=document.getElementById("app");
 const uid=()=>"c"+Math.random().toString(36).slice(2,9);
 const esc=s=>String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
@@ -3349,6 +3416,7 @@ function screens(P){
     const lab=multi?"Part "+(pt.label||String.fromCharCode(97+i))+": ":"";
     if(pt.type==="word"){if(modelChoices(P,i).length>1)out.push({pi:i,kind:"model",name:lab+"Pick a model"});out.push({pi:i,kind:"label",name:lab+"Label it"});
       if(settings.showWork)out.push({pi:i,kind:"solve",name:lab+"Solve"});out.push({pi:i,kind:"answer",name:lab+"Answer"})}
+    else if(pt.type==="algo"&&pt.items.length>1)pt.items.forEach((t,k)=>{const m=String(t).match(/^([a-z0-9]+)\./i);out.push({pi:i,k:0,ai:k,name:"Part "+(m?m[1]:k+1)})});
     else out.push({pi:i,k:0,name:lab+TYPE_NAME[pt.type]});
   });
   out.push({done:true,name:"Finished"});return out;
@@ -3636,7 +3704,36 @@ function fitDg(){document.querySelectorAll(".stage.sbx").forEach(x=>{const dg=x.
   for(let k=0;k<6;k++){const over=x.scrollHeight-x.clientHeight;if(over<=2||nh<=36)break;
     nh=Math.max(36,Math.floor(nh-over/n)-1);
     slots.forEach(s=>{const h=s.closest(".arow")?Math.max(32,Math.round(nh*.75)):nh;s.style.minHeight=h+"px";s.style.height=h+"px";s.style.paddingBlock="0"})}})}
-function addScrollers(){fitDg();document.querySelectorAll(".sbw").forEach(w=>{const x=w.querySelector(":scope>.sbx");if(!x)return;
+/* auto-fit: pick the largest button/box size at which the whole answer area fits without scrolling.
+   Order: (1) give a long problem text a little more room, (2) scale buttons between a minimum and maximum,
+   (3) if the minimum still does not fit, tighten spacing in two steps. Scroll buttons appear only if all of that fails. */
+function fitProb(){const pb=document.querySelector(".probw .sbx"),pw=pb&&pb.closest(".probw");if(!pb)return;
+  for(const [mh,fs] of [[36,1],[42,1],[42,.93],[46,.86],[48,.8]]){pw.style.maxHeight=mh+"%";pb.style.fontSize=fs===1?"":fs+"em";if(pb.scrollHeight<=pb.clientHeight+1)break}}
+function fitStage(){const st=document.querySelector(".stage.sbx");if(!st||S.view!=="problem"||S.ed)return;
+  fitProb();
+  const w=st.closest(".sbw");if(w)w.classList.remove("ovf");
+  const pr=document.createElement("div");pr.style.cssText="position:absolute;visibility:hidden;height:var(--tapb);width:1px";document.body.appendChild(pr);const base=pr.getBoundingClientRect().height||78;pr.remove();
+  const hi=Math.min(1.8,150/base);
+  const key=S.pid+"/"+S.scr+"/"+(S.al?S.al.ii:0)+"/"+Math.round(innerWidth/50)+"x"+Math.round(innerHeight/50);
+  const apply=(f,lv)=>{st.classList.toggle("cmp1",lv>=1);st.classList.toggle("cmp2",lv>=2);st.style.setProperty("--fit",f.toFixed(3));st.style.setProperty("--fz",Math.max(.86,Math.min(1.25,.82+.18*f)).toFixed(3))};
+  const fits=()=>st.scrollHeight<=st.clientHeight+1&&st.scrollWidth<=st.clientWidth+1&&![...st.querySelectorAll('.item,.frame,.eq,.alg,.wt')].some(e=>e.scrollWidth>e.clientWidth+1);
+  if(S.fitKey===key&&S.fitVal){apply(S.fitVal.f,S.fitVal.lv);if(fits())return}
+  const levels=[[0,Math.max(.5,Math.min(1,48/base))],[1,Math.max(.5,Math.min(1,46/base))],[2,Math.max(.5,Math.min(1,44/base))]];
+  let last=null;
+  for(const [lv,lo] of levels){last={f:lo,lv};
+    apply(hi,lv);if(fits()){S.fitKey=key;S.fitVal={f:hi,lv};return}
+    apply(lo,lv);if(!fits())continue;
+    let a=lo,b=hi;for(let i=0;i<9;i++){const m=(a+b)/2;apply(m,lv);if(fits())a=m;else b=m}
+    apply(a,lv);S.fitKey=key;S.fitVal={f:a,lv};return}
+  apply(last.f,last.lv);S.fitKey=key;S.fitVal=last;
+  /* still too tall at the smallest size: show the list a page at a time instead of making the student scroll */
+  const box=st.querySelector(".items");const kids=box?[...box.children]:[];
+  if(kids.length>1&&(S.capBusy||0)<3){const P=prob(S.pid),sc=curSc();if(P&&sc&&!sc.done){const fk=P.id+"/"+sc.pi;const full=P.parts[sc.pi].items.length;
+    const over=st.scrollHeight-st.clientHeight;const h=kids.reduce((a,e)=>a+e.getBoundingClientRect().height,0)/kids.length+8;
+    let cap=Math.max(1,kids.length-Math.ceil(over/h));
+    const per=Math.ceil(full/Math.ceil(full/cap));
+    if(per<full&&per!==S.cap[fk]){S.cap[fk]=per;S.capBusy=(S.capBusy||0)+1;S.fitKey=null;render();S.capBusy--}}}}
+function addScrollers(){fitStage();fitDg();document.querySelectorAll(".sbw").forEach(w=>{const x=w.querySelector(":scope>.sbx");if(!x)return;
   const old=w.querySelector(":scope>.sbn");if(old)old.remove();w.classList.remove("ovf");
   if(x.scrollHeight<=x.clientHeight+4)return;
   w.classList.add("ovf");if(x.scrollHeight<=x.clientHeight+4){w.classList.remove("ovf");return}
@@ -3682,7 +3779,7 @@ function renderProblem(){
   <div class="wrow"><div class="wmain">
   ${sc.done?"":`<div class="sbw probw"><section class="prob sbx">${P.text?`<div class="ptop"><p>${esc(P.text)}</p></div>`:""}${q?`<div class="ptop"><p class="${P.text?"pq":""}">${esc(q)}</p></div>`:""}${infoTables(P)}${P.parts[sc.pi]&&P.parts[sc.pi].note?`<p class="hint">Note: ${esc(P.parts[sc.pi].note)}</p>`:""}</section></div>`}
   <ol class="progress">${prog}</ol>
-  <div class="sbw grow"><main class="stage sbx">${!sc.done&&P.img&&IMG[P.img]?(P.parts[sc.pi].prot?protHTML(IMG[P.img]):`<div class="figwrap"><img class="figure" src="${IMG[P.img]}" alt="Picture from the worksheet for this problem"></div>`):""}${body}</main></div>
+  <div class="sbw grow"><main class="stage sbx ${!sc.done&&P.img&&IMG[P.img]&&!P.parts[sc.pi].prot?"hasfig":""}">${!sc.done&&P.img&&IMG[P.img]?(P.parts[sc.pi].prot?protHTML(IMG[P.img]):`<div class="figwrap"><img class="figure" src="${IMG[P.img]}" alt="Picture from the worksheet for this problem"></div>`):""}${body}</main></div>
   </div></div>
   <nav class="navbar"><button class="btn" data-act="prev" ${S.scr===0?"disabled":""}>Back</button><button class="btn primary" data-act="next">${sc.done?"Next problem":"Next"}</button></nav>`;
 }
@@ -3702,9 +3799,23 @@ function slot(w,k,cls,live){
   return`<${tag} class="slot ${cls}${S.hl===k?" hl":""}" ${live?`data-act="slot" data-k="${k}"`:""}><span class="nm">${esc(s.name||"")}</span><span class="val ${v?"":"empty"}">${v?esc(v):(live?"Tap to label":"")}</span></${tag}>`;
 }
 function modelRows(w,pt){return pt&&pt.geo&&w.model===pt.m?pt.geo:MODELS[w.model].rows}
+function eqgRow(w,live,k){/* one bar of k equal groups; each group is its own box when there are few enough to label */
+  if(k<=8)return Array.from({length:k},(_,i)=>slot(w,i?"p"+(i+1):"p","seg seg"+(i%4+1),live)).join("");
+  const p=Math.max(1/k,.12);
+  return slot(w,"p","seg seg1",live).replace('class="slot','style="flex:0 0 '+(p*100)+'%" class="slot')
+    +slot(w,"rest","seg seg2",live).replace('class="slot','style="flex:0 0 '+((1-p)*100)+'%;background-image:repeating-linear-gradient(90deg,transparent 0 calc(100% / '+(k-1)+' - 3px),var(--ink) calc(100% / '+(k-1)+' - 3px) calc(100% / '+(k-1)+'))" class="slot')}
 function diagram(w,live,pt){
   if(!w.model)return"";
+  if(w.model==="eqg"||w.model==="eqgu"){
+    const k=(pt&&w.model===pt.m&&pt.k)||4;
+    const body=w.model==="eqg"?eqgRow(w,live,k)
+      :slot(w,"g","seg seg1",live).replace('class="slot','style="flex:0 0 20%" class="slot')
+       +slot(w,"rest","diff joined",live).replace('class="slot','style="flex:1 1 0" class="slot')
+       +(pt&&pt.geo&&pt.geo[0].length>2?slot(w,"r","seg seg2",live).replace('class="slot','style="flex:0 0 18%" class="slot'):"");
+    return`<div class="dg"><div class="bar">${body}</div><div class="brace"></div><div class="whole-wrap">${slot(w,"whole","whole",live)}</div></div>`;
+  }
   const RM=modelRows(w,pt);
+
   if(RM)return`<div class="dg cmp${showTot(w,pt)?"":" nototal"}"><div class="cmp-rows">${RM.map(r=>`<div class="crow${r[0][0]===""?" arow":""}">${r.map(([k,f,c,dv],j)=>k===""?`<span class="gap" style="flex:0 0 ${f*100}%"></span>`:slot(w,k,(c<0?"diff":"seg seg"+(c+1))+(j&&r[j-1][0]!==""?" joined":""),live).replace('class="slot','style="flex:0 0 '+(f*100)+'%'+(dv>1?';background-image:repeating-linear-gradient(90deg,transparent 0 calc(100% / '+dv+' - 3px),var(--ink) calc(100% / '+dv+' - 3px) calc(100% / '+dv+'))':'')+'" class="slot')).join("")}</div>`).join("")}</div>${showTot(w,pt)?`<div class="vbrace"></div>${slot(w,"total","whole",live)}`:""}</div>`;
   if(w.model==="cmp")return`<div class="dg cmp${showTot(w,pt)?"":" nototal"}"><div class="cmp-rows"><div class="crow">${slot(w,"a","seg seg1 full",live)}</div><div class="crow">${slot(w,"b","seg seg2 short",live)}${slot(w,"diff","diff",live)}</div></div>${showTot(w,pt)?`<div class="vbrace"></div>${slot(w,"total","whole",live)}`:""}</div>`;
   return`<div class="dg"><div class="bar">${MODELS[w.model].parts.map((k,j)=>{const h=slot(w,k,"seg"+(j+1),live);return pt&&pt.pw&&w.model===pt.m?h.replace('class="slot','style="flex:'+pt.pw[j]+' 1 0" class="slot'):h}).join("")}</div><div class="brace"></div><div class="whole-wrap">${slot(w,"whole","whole",live)}</div></div>`;
@@ -3729,26 +3840,38 @@ function stepAnswer(P,pi){const w=PW(P.id,pi),pt=P.parts[pi];const parts=framePa
 function statementText(P,pi){const w=PW(P.id,pi);const parts=frameParts(P.parts[pi]);let s="";parts.forEach((t,i)=>{s+=t;if(i<parts.length-1)s+=(fmt(w.blanks["f"+i])||"___")});return s}
 
 /* other part types */
+const cols=(...x)=>`<div class="twocol">${x.filter(Boolean).join("")}</div>`;
 function itemSegs(s){return s.split(/(\{[^}]*\})/).filter(x=>x!=="")}
 function partFill(P,pi){const pt=P.parts[pi],w=PW(P.id,pi);
-  const fk=P.id+"/"+pi;const foc=settings.focus&&pt.items.length>1;let fi=Math.min(S.fi[fk]||0,pt.items.length-1);
-  const rows=pt.items.map((s,ii)=>{if(foc&&ii!==fi)return"";let b=0;return`<div class="item">${itemSegs(s).map(seg=>{
+  const fk=P.id+"/"+pi;const n=pt.items.length;
+  /* "one item at a time" in Tools, or automatic paging when a long list cannot fit on the screen at a usable button size */
+  const cap=Math.max(1,Math.min(n,settings.focus&&n>1?1:(S.cap[fk]||n)));
+  const pages=Math.ceil(n/cap);let pg=Math.min(S.fi[fk]||0,pages-1);if(pg<0)pg=0;
+  const lo=pg*cap,hi=Math.min(n,lo+cap);
+  const rows=pt.items.map((s,ii)=>{if(pages>1&&(ii<lo||ii>=hi))return"";let b=0;return`<div class="item">${itemSegs(s).map(seg=>{
     if(seg[0]!=="{")return esc(seg);
     const key=ii+"-"+(b++);const v=fmt(w.blanks[key]);
     if(seg==="{}")return`<button class="cell ${v?"":"empty"}" data-act="ed" data-k="fill" data-key="${key}">${v?esc(v):"Tap"}</button>`;
     const ch=seg.slice(1,-1).split("|");
-    return`<span class="choice">${ch.map(c=>`<button class="cell ${v===c?"on":""}" data-act="choose" data-key="${key}" data-v="${esc(c)}">${esc(c)}</button>`).join("")}</span>`;
+    return`<span class="choice">${ch.map(c=>`<button class="cell ${c.length<6?"nw":""} ${v===c?"on":""}" data-act="choose" data-key="${key}" data-v="${esc(c)}">${esc(c)}</button>`).join("")}</span>`;
   }).join("")}${pt.nl?`<div class="nlrow"><span class="hint">Number line:</span>${["top","halfway","bottom"].map((lab,k)=>{const key=ii+"-nl"+k;const v=fmt(w.blanks[key]);return`<span class="nlc"><span class="nll">${lab}</span><button class="cell ${v?"":"empty"}" data-act="ed" data-k="fill" data-key="${key}">${v?esc(v):"Tap"}</button></span>`}).join("")}</div>`:""}</div>`}).join("");
-  const fnav=foc?`<div class="focusnav"><button class="btn" data-act="fprev" data-k="${esc(fk)}" ${fi>0?"":"disabled"}>Previous item</button><span class="fcount">Item ${fi+1} of ${pt.items.length}</span><button class="btn primary" data-act="fnext" data-k="${esc(fk)}" data-n="${pt.items.length}" ${fi<pt.items.length-1?"":"disabled"}>Next item</button></div>`:"";
-  return`<p class="ask">Tap each blank to fill it in.</p><div class="items ${foc?"one":""}">${rows}</div>${fnav}${pt.work&&settings.showWork?`<div class="worksec"><p class="ask">Show your work (optional).</p>${stepsHTML(P,pi)}</div>`:""}`;
+  const unit=cap>1?"items":"item";
+  const fnav=pages>1?`<div class="focusnav"><button class="btn" data-act="fprev" data-k="${esc(fk)}" ${pg>0?"":"disabled"}>Previous ${unit}</button><span class="fcount">${cap>1?"Items "+(lo+1)+"–"+hi:"Item "+(lo+1)} of ${n}</span><button class="btn primary" data-act="fnext" data-k="${esc(fk)}" data-n="${pages}" ${pg<pages-1?"":"disabled"}>Next ${unit}</button></div>`:"";
+  return cols(`<div class="col"><p class="ask">Tap each blank to fill it in.</p><div class="items ${pages>1&&cap===1?"one":""}">${rows}</div>${fnav}</div>`,pt.work&&settings.showWork?`<div class="col worksec"><p class="ask">Show your work (optional).</p>${stepsHTML(P,pi)}</div>`:"");
 }
 function partTable(P,pi){const pt=P.parts[pi],w=PW(P.id,pi);
-  const body=pt.rows.map((r,ri)=>`<tr>${r.map((c,ci)=>{if(c!=="")return`<td class="given">${esc(c)}</td>`;const key=ri+"-"+ci;const v=fmt(w.cells[key]);
-    return`<td><button class="cell ${v?"":"empty"}" data-act="ed" data-k="tc" data-key="${key}">${v?esc(v):"Tap"}</button></td>`}).join("")}</tr>`).join("");
+  const head=`<tr>${pt.cols.map((c,ci)=>{if(c!==""||!pt.heads)return`<th>${esc(c)}</th>`;const v=fmt(w.cells["h-"+ci]);return`<th><button class="cell ${v?"":"empty"}" data-act="ed" data-k="tc" data-key="h-${ci}">${v?esc(v):"Label"}</button></th>`}).join("")}</tr>`;
+  const line=(r,ri)=>`<tr>${r.map((c,ci)=>{if(c!=="")return`<td class="given">${esc(c)}</td>`;const key=ri+"-"+ci;const v=fmt(w.cells[key]);
+    return`<td><button class="cell ${v?"":"empty"}" data-act="ed" data-k="tc" data-key="${key}">${v?esc(v):"Tap"}</button></td>`}).join("")}</tr>`;
+  /* a tall, narrow table is split into blocks side by side so the boxes stay large instead of running off the screen */
+  const n=pt.rows.length,nb=pt.cols.length<=3&&n>6?Math.min(4,Math.ceil(n/6)):1,per=Math.ceil(n/nb);
+  let blocks="";
+  for(let b=0;b<nb;b++){const body=pt.rows.slice(b*per,(b+1)*per).map((r,k)=>line(r,b*per+k)).join("");
+    if(body)blocks+=`<table class="wt">${head}${body}</table>`}
   const rv=fmt(w.rule);
   return`<p class="ask">${pt.rule?"Complete the table and write the rule.":"Tap each empty box to fill it in."}</p>
   ${pt.caption?`<p class="hint">${esc(pt.caption)}</p>`:""}
-  <div class="tablewrap"><table class="wt"><tr>${pt.cols.map((c,ci)=>{if(c!==""||!pt.heads)return`<th>${esc(c)}</th>`;const v=fmt(w.cells["h-"+ci]);return`<th><button class="cell ${v?"":"empty"}" data-act="ed" data-k="tc" data-key="h-${ci}">${v?esc(v):"Label"}</button></th>`}).join("")}</tr>${body}</table></div>
+  <div class="tablewrap ${nb>1?"split":""}">${blocks}</div>
   ${pt.rule?`<div class="rule">Rule:<button class="cell ${rv?"":"empty"}" data-act="ed" data-k="rule">${rv?esc(rv):"Tap to write the rule"}</button></div>`:""}`;
 }
 function partExplain(P,pi){const w=PW(P.id,pi);const v=fmt(w.ans);
@@ -3758,17 +3881,16 @@ function partOrder(P,pi){const pt=P.parts[pi],w=PW(P.id,pi);
   const pool=pt.items.map((x,i)=>w.seq.includes(i)?"":`<button class="chip" data-act="pick" data-i="${i}">${esc(x)}</button>`).join("");
   const sym=pt.desc?">":"<";
   const seq=w.seq.map((i,k)=>(k?`<span class="lt">${sym}</span>`:"")+`<span class="s">${esc(pt.items[i])}</span>`).join("");
-  return`<p class="ask">Tap them in order from ${pt.desc?"greatest to least":"least to greatest"}.</p>${pt.line?`<p class="hint">${esc(pt.line)}</p>`:""}
+  return cols(`<div class="col"><p class="ask">Tap them in order from ${pt.desc?"greatest to least":"least to greatest"}.</p>${pt.line?`<p class="hint">${esc(pt.line)}</p>`:""}
   <div class="order"><div class="pool">${pool||`<span class="hint">All placed.</span>`}</div><p class="lab">${pt.desc?"Greatest to least":"Least to greatest"}</p><div class="seq">${seq||`<span class="hint">Your order shows here.</span>`}</div>
-  <div class="rowbtns"><button class="btn" data-act="unpick" ${w.seq.length?"":"disabled"}>Undo last</button><button class="btn" data-act="clearseq" ${w.seq.length?"":"disabled"}>Start order over</button></div></div>
-  ${pt.work!==false&&settings.showWork?`<div class="worksec"><p class="ask">Show your work (optional). Convert each to the same unit.</p>${stepsHTML(P,pi)}</div>`:""}`;
+  <div class="rowbtns"><button class="btn" data-act="unpick" ${w.seq.length?"":"disabled"}>Undo last</button><button class="btn" data-act="clearseq" ${w.seq.length?"":"disabled"}>Start order over</button></div></div></div>`,
+  pt.work!==false&&settings.showWork?`<div class="col worksec"><p class="ask">Show your work (optional). Convert each to the same unit.</p>${stepsHTML(P,pi)}</div>`:"");
 }
 function frameHTML(P,pi){const w=PW(P.id,pi),pt=P.parts[pi];const parts=frameParts(pt);let h="";
   parts.forEach((t,i)=>{h+=esc(t);if(i<parts.length-1){const v=fmt(w.blanks["f"+i]);h+=`<button class="cell ${v?"":"empty"}" data-act="ed" data-k="fb" data-key="f${i}">${v?esc(v):"Tap"}</button>`}});return`<div class="frame">${h}</div>`}
 function partSolve(P,pi){const pt=P.parts[pi],w=PW(P.id,pi);const v=fmt(w.ans);
-  return`${settings.showWork?`<p class="ask">Show your work. Write one step on each line.</p>${stepsHTML(P,pi)}`:""}
-  <div class="${settings.showWork?"worksec":""}"><p class="ask">Answer</p>${frameHTML(P,pi)}${settings.read?`<button class="btn add" data-act="readans" data-pi="${pi}">Read my answer</button>`:""}</div>
-  ${pt.explain?`<div class="worksec"><p class="ask">Explain how you know.</p><button class="cell ansbox ${v?"":"empty"}" data-act="ed" data-k="ans">${v?esc(v):"Tap to explain"}</button></div>`:""}`;
+  return cols(settings.showWork?`<div class="col"><p class="ask">Show your work. Write one step on each line.</p>${stepsHTML(P,pi)}</div>`:"",
+  `<div class="col ${settings.showWork?"worksec":""}"><p class="ask">Answer</p>${frameHTML(P,pi)}${settings.read?`<button class="btn add" data-act="readans" data-pi="${pi}">Read my answer</button>`:""}${pt.explain?`<p class="ask">Explain how you know.</p><button class="cell ansbox ${v?"":"empty"}" data-act="ed" data-k="ans">${v?esc(v):"Tap to explain"}</button>`:""}</div>`);
 }
 /* ---------- written-method grids: add, subtract, multiply, long division ---------- */
 function parseAlgo(s){const m=s.match(/^([a-z0-9]+\.)\s*(.*)$/i);const lab=m?m[1]:"",ex=m?m[2]:s;
@@ -3792,11 +3914,12 @@ function algoLine(it,st){const a=algoAns(it,st)||"___";
 function algoStart(it){return it.kind==="div"?{row:"q",col:0}:{row:it.parts.length?"p0":"a",col:it.cols-1}}
 function partAlgo(P,pi){const pt=P.parts[pi],w=PW(P.id,pi);
   const its=pt.items.map(parseAlgo);
-  if(!S.al||S.al.pid!==P.id||S.al.pi!==pi)S.al=Object.assign({pid:P.id,pi,ii:0},algoStart(its[0]));
-  const ii=Math.min(S.al.ii,its.length-1),it=its[ii],st=algoState(w,ii);
+  const sc0=curSc(),want=Math.min((sc0&&sc0.ai)||0,its.length-1);
+  if(!S.al||S.al.pid!==P.id||S.al.pi!==pi||S.al.ii!==want)S.al=Object.assign({pid:P.id,pi,ii:want},algoStart(its[want]));
+  const ii=want,it=its[ii],st=algoState(w,ii);
   const sel=(r,j)=>S.al.row===r&&S.al.col===j?"sel":"";
   const gap=j=>{const p=it.cols-1-j;return it.kind!=="div"&&p>0&&p%3===0?"g3":""};
-  const tabs=its.length>1?`<div class="pickgrid algtabs">${its.map((t,k)=>{const done=algoAns(t,algoState(w,k));return`<button class="btn ${k===ii?"on":""}" data-act="altab" data-i="${k}">${esc(t.lab||String(k+1))}${done?" ✓":""}</button>`}).join("")}</div>`:"";
+  const tabs="";
   const lbl={c:"regroup",a:"answer",q:"quotient",rem:"remainder"};
   const cells=(r,cls)=>Array.from({length:it.cols},(_,j)=>`<td class="${gap(j)}"><button class="acell ${cls||""} ${sel(r,j)}" data-act="alsel" data-row="${r}" data-col="${j}" aria-label="${lbl[r]||(r[0]==="p"?"partial product":"work")} box">${esc((st[r]||{})[j]||"")}</button></td>`).join("");
   let grid,how;
@@ -3816,10 +3939,10 @@ function partAlgo(P,pi){const pt=P.parts[pi],w=PW(P.id,pi);
      ${it.parts.map((r,k)=>`<tr class="${k===0?"aline":""}"><td class="aop">${k===it.parts.length-1?"+":""}</td>${cells(r)}</tr>`).join("")}
      <tr class="aline"><td class="aop"></td>${cells("a")}</tr></table>`;
   }
-  return`<p class="ask">${how}</p>${tabs}
+  return cols(`<div class="col"><p class="ask">${how}</p>${tabs}
   <div class="algwrap"><div class="tablewrap">${grid}</div>
-   <div class="apad">${["7","8","9","4","5","6","1","2","3"].map(d=>`<button class="key" data-act="aldig" data-v="${d}">${d}</button>`).join("")}<button class="key fn" data-act="alerase">Erase</button><button class="key" data-act="aldig" data-v="0">0</button><button class="key fn" data-act="alnext" ${ii<its.length-1?"":"disabled"}>Next one</button></div></div>
-  ${pt.work&&settings.showWork?`<div class="worksec"><p class="ask">Check your work (optional).</p>${stepsHTML(P,pi)}</div>`:""}`;
+   <div class="apad">${["7","8","9","4","5","6","1","2","3"].map(d=>`<button class="key" data-act="aldig" data-v="${d}">${d}</button>`).join("")}<button class="key fn" data-act="alerase">Erase</button><button class="key" data-act="aldig" data-v="0">0</button></div></div></div>`,
+  pt.work&&settings.showWork?`<div class="col worksec"><p class="ask">Check your work (optional).</p>${stepsHTML(P,pi)}</div>`:"");
 }
 function drawAlgo(x,F,it,st,bx,by){const cw=24,cx=j=>bx+44+j*cw;const T=(t,j,yy,sz,wt,col)=>{x.font=F(sz,wt);x.fillStyle=col;x.textAlign="center";x.fillText(t,cx(j)+cw/2,yy);x.textAlign="left"};
   x.font=F(17,700);x.fillStyle=PIC.ink;x.fillText(it.lab,bx,by+20);
@@ -4052,7 +4175,7 @@ function sheetCfg(t){
 function slotDesc(k){const w=PW(S.pid,curSc().pi);const m=w.model;const n=s=>({a:"the top bar",b:"the second bar",c:"the third bar",diff:"the dashed part (the difference)",d1:"the first dashed part (a difference)",d2:"the second dashed part (a difference)",total:"the total",whole:"the total",t1:"the first part of the top bar",t2:"the second part of the top bar",b1:"the first part of the bottom bar",b2:"the second part of the bottom bar",b3:"the third part of the bottom bar",p1:"part 1",p2:"part 2",p3:"part 3",p4:"part 4"})[s];
   if(m==="mcmp")return k==="a"?"the one-unit bar":k==="b"?"the bar of equal units":n(k)||"this part";
   if(m==="eqgu")return k==="g"?"one group":k==="rest"?"the other groups (how many?)":k==="r"?"the part left over":n(k)||"this part";
-  if(m==="eqg")return k==="p"?"one equal part":k==="rest"?"the other equal parts":n(k)||"this part";
+  if(m==="eqg")return k==="p"?"one equal part":k==="rest"?"the other equal parts":/^p\d$/.test(k)?"equal part "+k.slice(1):n(k)||"this part";
   if(/^ppw/.test(m)&&/^p\d$/.test(k))return"part "+k.slice(1)+" of the bar";
   return n(k)||"this part"}
 function sheetCfg0(t,pt){
